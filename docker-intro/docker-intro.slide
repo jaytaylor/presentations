@@ -1,0 +1,327 @@
+Introduction to Docker
+and Linux Containers
+12 Apr 2018
+Tags: Docker, Linux Containers
+
+Jay Taylor
+Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
+jay.taylor@oracle.com
+
+* Container-based virtualization has showed incredible staying power, and remains one of the hottest (and sometimes most controverisal) technologies in cloud computing.
+
+* About Docker
+
+Docker is a tool designed to make it easy to create, deploy, and run applications through the use of containers.
+
+.image img/docker.jpg
+
+* Okay, so what is a container?
+
+* 
+
+*Conceptually,* *think* *of* *a* *container* *as* *a* *fully* *self-contained* *executable.*
+
+* 
+
+Conceptually, think of containers as a fully self-contained executable.
+
+*You* *can* *also* *think* *of* *a* *container* *as* *a* *very* *lightweight* *VM* *that* *"boots"* *in* *just* *a* *few* *seconds.*
+
+* 
+
+Conceptually, think of containers as a fully self-contained executable.
+
+You can also think of a container as a very lightweight VM that "boots" in just a few seconds.
+
+*A* *container* *holds* *a* *base* *operating* *system* *and* *the* *entirety* *of* *a* *program,* *including* *all* *dependencies* *needed* *at* *runtime.*
+
+* 
+
+Conceptually, think of containers as a fully self-contained executable.
+
+You can also think of a container as a very lightweight VM that "boots" in just a few seconds.
+
+A container holds a base operating system and the entirety of a program, including all dependencies needed at runtime.
+
+*Containers* *can* *be* *distributed* *to* *different* *machines* *and* *run* *without* *downloading* *or* *installing* *any* *additional* *packages* *or* *dependencies.*
+
+* The Good Parts
+
+- Docker images are all run in a standardized way, making them easy to consume compared to raw binaries or python scripts with possibly missing dependencies.
+- Reduced pollution on your machine: No more installing tons of dependencies just to try out one thing only to discover it didn't do what you want.
+- Powerful and useful abstraction and primitive building block for architecting and operating production infrastructure at scale*.
+
+_The_other_parts_
+
+ * Containerization is definitely a double-edged sword, cannot blindly stuff dockers in
+ and expect things to turn out maximally awesome.
+ 
+ Containerization brings with it complexity, which needs to be actively considered and
+ managed.
+
+Time permitting, additional 'gotchas' will be covered at the end.
+
+* How did we get here?
+
+** Quick history review
+
+* 1979: Unix V7
+
+The `chroot()` system call was first introduced during the development of Unix V7.
+
+In 1982 it was also added to BSD.
+
+Invoking `chroot()` changes the apparent root directory for the current running process and its children, effectively providing a layer of isolation from the rest of the system.
+
+* 2000: FreeBSD Jails
+
+Nearly 20 years later, a small shared-environment hosting provider came up with FreeBSD jails to keep its services and customers separate.
+
+`chroot` `jails` were a pretty slick way to securely share computing resources.
+
+.link http://phk.freebsd.dk/pubs/sane2000-jail.pdf Y2K Jails
+
+* 2001: Linux VServer
+
+Implemented as a Linux Kernel Patch, Linux VServer is a jail mechanism which can partition:
+
+- File Systems
+- Network Addresses
+- System Memory
+
+* 2004: Oracle Solaris Zones
+
+In 2004 Oracle released container functionality in Solaris that combined system resource controls and boundary separation.
+
+.image img/solaris-containers.jpg
+
+
+#* 2005: Open VZ (Open Virtuzzo)
+#
+#A Linux Kernel Patch for OS-level virtualization.
+#Never merged into Linux Kernel.
+
+
+* 2006: Process Containers, AKA Linux CGroups
+
+Google launched `Process` `Containers` in 2006, and later renamed the project to `CGROUPS` (Control Groups).
+
+`CGROUPS` are designed to limit, isolate, and account for usage of system resources.
+
+- CPU
+- Memory
+- Disk I/O
+- Network
+
+Merged into the Linux Kernel a year later.
+
+* 2008: LXC
+
+LXC (LinuX Containers) was the first (mostly) complete implementation of Linux Container Manager.
+
+Implemented using cgroups and Linux namespaces, and it works on a single Linux kernel without requiring any patches. 
+
+* 2009: Heroku
+
+_Containers_meet_SaaS_
+
+In 2009 the Heroku PaaS launched, and over subsequent years became a huge success with developers all over the world.
+
+Deploying became as simple as `git` `push` `heroku`.
+
+Acquired by Salesforce in 2010.
+
+Heroku was what first got me really curious and ultimately excited about Platform-as-a-Service.  "How do they make this work?", I couldn't help but wonder.
+
+* 2013: LMCTFY
+
+`LMCTFY` stands for "Let Me Control That For You", and was released in 2013 as an open-source version of the Google Container Stack.  Written in C++
+
+Development ceased in 2015 when Google altered course and began contributing to `libcontainer`, which has now become part of the Open Container Foundation.
+
+.link https://github.com/google/lmctfy LMCTFY source code (primarily C++)
+
+* 2013: Enter Docker
+
+.image img/shykes.jpg
+
+* 2013: Enter Docker, cont'd..
+
+Docker was created and first released by Solomon Hykes in 2013.
+
+After starting out years earlier as a way to have git-like version control for an entire operating system, by 2013 Docker had evolved into a serious contender in the container space.
+
+Initially Docker used LXC under the covers, and later transitioned to Docker's own in-house container manager, `libcontainer`.
+
+
+* 2015: A Container E X P L O S I O N 
+
+* 
+
+*Container* *Wars.*
+
+*Docker* *vs.* *CoreOS* */* *Rkt*
+
+*Docker* *vs.* *LXC* *v2*
+
+*Apache* *Mesos* *vs.* *Kubernetes*
+
+* Cool, let's get down to business
+
+* Getting Your Bearings: Docker Basics
+
+* What will be covered
+
+- Listing and inspecting images and containers
+- Running a container
+- Attaching an interactive shell to a running container
+- Getting logs out of a container
+- Creating a container
+
+* List local docker images
+
+ $ docker images
+ REPOSITORY               TAG       IMAGE ID            CREATED             SIZE
+ elasticsearch-kubernetes 2.0.0     5cbf1638d697        19 hours ago        653 MB
+ zookeeper                2.0.0     6a8ff2ded48c        19 hours ago        611 MB
+ kafka                    2.0.0     e9ab782a5ffc        19 hours ago        634 MB
+ elasticsearch-base       2.0.0     0f4c385e0b48        19 hours ago        653 MB
+ nginx                    latest    c5c4e8fa2cf7        7 days ago          109 MB
+ oraclelinux              latest    98426f275c58        4 weeks ago         229 MB
+ registry                 2         d1fd7d86a825        3 months ago        33.3 MB
+ nginx-ingress-controller 2.0.0     6a918bb54e6d        6 months ago        162 MB
+ defaultbackend           2.0.0     137a07dfd084        2 years ago         7.51 MB
+
+* List running docker containers
+
+ $ docker ps
+ CONTAINER ID  IMAGE                           COMMAND                 CREATED             STATUS
+ 8d8967ea77e9  nginx                          "nginx -g 'daemon ..."   About an hour ago   Up About an hour
+ 270e9dba7665  k8s-dns-sidecar-amd64          "/sidecar --v=2 --..."   19 hours ago        Up 19 hours
+ 8232c64c1672  k8s-dns-dnsmasq-nanny-amd64    "/dnsmasq-nanny -v..."   19 hours ago        Up 19 hours
+ b4a8042fc518  k8s-dns-kube-dns-amd64         "/kube-dns --domai..."   19 hours ago        Up 19 hours
+ f60deb7a7f1d  kube-proxy-amd64               "/usr/local/bin/ku..."   19 hours ago        Up 19 hours
+ d2c95dc3d52e  flannel                        "/bin/sh -c 'set -..."   19 hours ago        Up 19 hours
+ 65e2a6d59c1a  flannel                        "/opt/bin/flanneld..."   19 hours ago        Up 19 hours
+ 81bfd4e25c9c  kube-controller-manager-amd64  "kube-controller-m..."   19 hours ago        Up 19 hours
+ 25736e50cbac  etcd-amd64                     "etcd --listen-cli..."   19 hours ago        Up 19 hours
+ 48ee07d55d85  kube-apiserver-amd64           "kube-apiserver --..."   19 hours ago        Up 19 hours
+ c18c6032faed  kube-scheduler-amd64           "kube-scheduler --..."   19 hours ago        Up 19 hours
+ bf49f39f0392  registry:2                     "/entrypoint.sh /e..."   19 hours ago        Up 19 hours
+
+* Docker Inspect
+
+`docker` `inspect` may be invoked on an image or container, and emits JSON containing the state and configuration details for the underlying item.
+
+Let's look at a few real-world examples.
+
+* Docker Inspect on a Container
+
+ $ docker inspect 8d8967ea77e9
+ [
+     {
+         "Id": "8d8967ea77e98114fdcb6aff594e31275af2a6ed7e45a520028038125e6b8f2d",
+         "Created": "2018-04-10T20:23:22.753954161Z",
+         "Path": "nginx",
+         "Args": [
+             "-g",
+             "daemon off;"
+         ],
+         "State": {
+             "Status": "running",
+             "Running": true,
+             "Paused": false,
+             "Restarting": false,
+             "OOMKilled": false,
+ ...
+
+* Docker Inspect on an Image
+
+ $ docker inspect c5c4e8fa2cf7
+ [
+     {
+         "Id": "sha256:c5c4e8fa2cf7d87545ed017b60a4b71e047e26c4ebc71eb1709d9e5289f9176f",
+         "RepoTags": [
+             "nginx:latest"
+         ],
+         "RepoDigests": [
+             "nginx@sha256:e36d7f5dabf1429d84135bb8a8086908e1150f1a178c75719a9e0e53ebb90353"
+         ],
+         "Parent": "",
+         "Comment": "",
+         "Created": "2018-04-03T18:16:10.473316776Z",
+         "Container": "582b207bfd32024bac06b284dd333d2325446f42de093822176db66929aec559",
+         "ContainerConfig": {
+             "Hostname": "582b207bfd32",
+             "Domainname": "",
+             "User": "",
+             "AttachStdin": false,
+ ...
+
+Let's you see facts like the default command the container will start with, and tons of metadata useful for detective work.
+
+* 
+
+* Attach to a running container interactively
+
+
+
+#: Just a note
+#
+#
+#* ne
+#
+#Docker is both a company and a product
+#
+#A
+#
+#B
+#
+#C
+#
+#d
+#
+#_italic_
+#*bold*
+#`program`
+#Markup—_especially_italic_text_—can easily be overused.
+#_Why_use_scoped__ptr_? Use plain ***ptr* instead.
+#
+#
+#* Title of slide or section (must have asterisk)
+#
+#Some Text
+#
+#** Subsection
+#
+#- bullets
+#- more bullets
+#
+#* New page
+#** Subsection again
+#*** Sub-subsection
+#
+#Some More text
+#
+#  Preformatted text
+#  is indented (however you like)
+#
+#Further Text, including invocations like:
+#
+#.code x.java /static void main/,/^}/
+#
+#* Next section here
+#
+#.play x.java
+##.image image.jpg
+##.background image.jpg
+##.iframe http://foo
+#.link http://foo label
+##.html file.html
+#.caption _Gopher_ by [[https://www.instagram.com/reneefrench/][Renée French]]
+#
+#Again, more text
+
+* References
+
+.link https://blog.aquasec.com/a-brief-history-of-containers-from-1970s-chroot-to-docker-2016 A Brief History of Containers from 1970s Chroot to Docker 2016

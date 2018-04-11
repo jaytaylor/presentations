@@ -9,6 +9,18 @@ jay.taylor@oracle.com
 
 * Container-based virtualization has showed incredible staying power, and remains one of the hottest (and sometimes most controverisal) technologies in cloud computing.
 
+* What we're going to cover
+
+* Agenda
+
+- About Docker
+- Explain some of the ideas and motivation behind containers
+- Quick review of the history of containers
+- Demonstration of Docker basics
+- Advanced Topics
+- Exercises for you to try
+- Additional Resources
+
 * About Docker
 
 Docker is a tool designed to make it easy to create, deploy, and run applications through the use of containers.
@@ -153,7 +165,6 @@ After starting out years earlier as a way to have git-like version control for a
 
 Initially Docker used LXC under the covers, and later transitioned to Docker's own in-house container manager, `libcontainer`.
 
-
 * 2015: A Container E X P L O S I O N 
 
 * 
@@ -168,17 +179,33 @@ Initially Docker used LXC under the covers, and later transitioned to Docker's o
 
 * Cool, let's get down to business
 
-* Getting Your Bearings: Docker Basics
+* Getting Your Bearings
 
 * What will be covered
 
-- Listing and inspecting images and containers
-- Running a container
-- Attaching an interactive shell to a running container
-- Getting logs out of a container
-- Creating a container
+*Basics*
+
+- Listing images and containers
+- Pulling an image
+- Running an image
+
+* What will be covered
+
+Basics
+
+- Listing available images
+- Listing running containers
+- Pulling an image
+- Running an image
+- Running interactive sessions
+
+*Advanced* *Topics*
+
+Time permitting.
 
 * List local docker images
+
+`docker` `images` displays an inventory of images available on the machine.
 
  $ docker images
  REPOSITORY               TAG       IMAGE ID            CREATED             SIZE
@@ -193,6 +220,10 @@ Initially Docker used LXC under the covers, and later transitioned to Docker's o
  defaultbackend           2.0.0     137a07dfd084        2 years ago         7.51 MB
 
 * List running docker containers
+
+`docker` `ps` shows the current state of which containers are running.
+
+Here is an example from a live Kubernetes cluster:
 
  $ docker ps
  CONTAINER ID  IMAGE                           COMMAND                 CREATED             STATUS
@@ -209,7 +240,180 @@ Initially Docker used LXC under the covers, and later transitioned to Docker's o
  c18c6032faed  kube-scheduler-amd64           "kube-scheduler --..."   19 hours ago        Up 19 hours
  bf49f39f0392  registry:2                     "/entrypoint.sh /e..."   19 hours ago        Up 19 hours
 
-* Docker Inspect
+* Pull an image
+
+`docker` `pull` `[image-name-here]` downloads a docker image from a server.
+
+In docker lingo, these servers are called "registries".
+
+ $ docker pull tutum/curl
+ Using default tag: latest
+ latest: Pulling from tutum/curl
+ a3ed95caeb02: Pull complete
+ 23efb549476f: Pull complete
+ aa2f8df21433: Pull complete
+ ef072d3c9b41: Pull complete
+ c9f371853f28: Pull complete
+ a248b0871c3c: Pull complete
+ b0376fc63f29: Pull complete
+ Digest: sha256:b6f16e88387acd4e6326176b212b3dae63f5b2134e69560d0b0673cfb0fb976f
+ Status: Downloaded newer image for tutum/curl:latest
+
+* Run an image
+
+`docker` `run` `[image-name]`
+
+Creates a new container from the given image and starts it up.
+
+ $ docker run tutum/curl echo hi
+ hi
+ 
+ $ docker run -it tutum/curl curl https://jaytaylor.com
+ <!doctype html>
+ <html>
+ <head>
+     <title>Jay Taylor | Welcome to jaytaylor.com</title>
+     <meta charset="utf-8">
+     <meta name="author" content="Jay Taylor">
+     <meta name="description" content="Jay Taylor's Website">
+ </head>
+ <body>
+ <h2>Welcome to the website of Jay Taylor</h2>
+ 
+ I am fascinated by all things software.
+ ...
+
+* Run an image interactively
+
+`docker` `run` `-i` `-t` `[image-name]`
+
+Use the `-i` (interactive) and `-t` (allocate pseudi-TTY) flags to create an interactive session.
+
+ $ docker run -it tutum/curl /bin/bash
+ root@d0e2b8ca13a9:/# ps -ef
+ UID         PID   PPID  C STIME TTY          TIME CMD
+ root          1      0  0 17:54 pts/0    00:00:00 /bin/bash
+ root          9      1  0 17:54 pts/0    00:00:00 ps -ef
+ root@d0e2b8ca13a9:/# exit
+ $
+
+There are many, many flags and options available with most docker commands.  This gives you extensive and precise control over networking, volume mounts, security characteristics, resource quotas and more.
+
+* Run an image interactively
+
+`docker` `run` `-i` `-t` `[image-name]`
+
+Use the `-i` (interactive) and `-t` (allocate pseudi-TTY) flags to create an interactive session.
+
+ $ docker run -it tutum/curl /bin/bash
+ root@d0e2b8ca13a9:/# ps -ef
+ UID         PID   PPID  C STIME TTY          TIME CMD
+ root          1      0  0 17:54 pts/0    00:00:00 /bin/bash
+ root          9      1  0 17:54 pts/0    00:00:00 ps -ef
+ root@d0e2b8ca13a9:/# exit
+ $
+
+There are many, many flags and options available with most docker commands.  This gives you extensive and precise control over networking, volume mounts, security characteristics, resource quotas and more.
+
+*Also:* *notice* *the* *process* *isolation* *in* *output* *above.* ** *Anything* *run* *within* *the* *container* *can* *only* *see* *stuff* *inside* *that* *container.*
+
+* Advanced Topics
+
+* We'll demontrate
+
+- Creating a new container from an image
+- Starting an existing container
+- Attaching an interactive shell to a running container
+- Getting logs out of a container
+- Building an image from a Dockerfile
+- Inspecting image and container metadata
+
+
+* Create a new container from an image
+
+ $ docker create --name precious --entrypoint top -t tutum/curl
+ 70676178a62c639cba54bbf927632473f6f25c5d52993c57f4d056fcfebfb730
+
+List all containers (even ones not actively running) with:
+
+`docker` `ps` `-a`
+
+ $ docker ps -a
+ CONTAINER ID  IMAGE       COMMAND  CREATED        STATUS   NAMES
+ 70676178a62c  tutum/curl  "top"    3 minutes ago  Created  precious
+
+* Starting an existing container
+
+`docker` `start` `[container-name]`
+
+ $ docker start precious
+ precious
+ 
+ $ docker ps
+ CONTAINER ID  IMAGE       COMMAND  CREATED         STATUS         NAMES
+ 70676178a62c  tutum/curl  "top"    42 seconds ago  Up 15 seconds  precious
+
+* Attaching an interactive shell to a running container
+
+`docker` `exec` `-it` `[container-name]`
+
+ $ docker exec -it precious bash
+ root@70676178a62c:/# ps -ef
+ UID         PID   PPID  C STIME TTY          TIME CMD
+ root          1      0  0 18:47 pts/0    00:00:00 top
+ root         25      0  2 19:09 pts/1    00:00:00 bash
+ root         33     25  0 19:09 pts/1    00:00:00 ps -ef
+ root@70676178a62c:/# pwd
+ /
+ root@70676178a62c:/# ls
+ bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+ boot  etc  lib   media  opt  root  sbin  sys  usr
+ root@70676178a62c:/# ls -a
+ .   .bash_history  bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+ ..  .dockerenv     boot  etc  lib   media  opt  root  sbin  sys  usr
+ root@70676178a62c:/# exit
+ exit
+ $
+
+* Getting logs out of a container
+
+`docker` `logs` `[container-name]`
+
+Dumps as much of stdout as docker has buffered.
+
+ $ docker logs precious
+ top - 19:07:04 up 8 days,  5:45,  0 users,  load average: 0.21, 0.35, 1.14
+ Tasks:   1 total,   1 running,   0 sleeping,   0 stopped,   0 zombie
+ %Cpu(s): 16.9 us,  9.4 sy,  0.0 ni, 69.3 id,  0.0 wa,  0.0 hi,  4.4 si,  0.0 stKiB Mem:  32929708 total, 21739124 used, 11190584 free,   177288 buffers
+ KiB Swap:        0 total,        0 used,        0 free.  9138352 cached Mem
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND     1 root      20   0   19852   2396   2080 R   0.0  0.0   0:00.21 top
+
+Or to follow a containers log output, use the `-f/--follow` flag:
+
+`docker` `logs` `-f` `[container-name]`
+
+This functions similiarly to `tail` `-f`
+
+* Building an image from a Dockerfile
+
+A Dockerfile is a text file with instructions on how to build an image.
+
+The general format follows:
+
+ FROM $someBaseImage
+ 
+ RUN ...a.bunch.of.shell.commands.to.construct.the.desired.state
+ 
+ EXPOSE $portNumber
+ 
+ ENTRYPOING ["/myServer.sh"]
+
+* Inspecting image and container metadata
+
+
+
+
+* Docker inspect
 
 `docker` `inspect` may be invoked on an image or container, and emits JSON containing the state and configuration details for the underlying item.
 
@@ -265,62 +469,22 @@ Let's you see facts like the default command the container will start with, and 
 * Attach to a running container interactively
 
 
+* Exercises for you to try
 
-#: Just a note
-#
-#
-#* ne
-#
-#Docker is both a company and a product
-#
-#A
-#
-#B
-#
-#C
-#
-#d
-#
-#_italic_
-#*bold*
-#`program`
-#Markup—_especially_italic_text_—can easily be overused.
-#_Why_use_scoped__ptr_? Use plain ***ptr* instead.
-#
-#
-#* Title of slide or section (must have asterisk)
-#
-#Some Text
-#
-#** Subsection
-#
-#- bullets
-#- more bullets
-#
-#* New page
-#** Subsection again
-#*** Sub-subsection
-#
-#Some More text
-#
-#  Preformatted text
-#  is indented (however you like)
-#
-#Further Text, including invocations like:
-#
-#.code x.java /static void main/,/^}/
-#
-#* Next section here
-#
-#.play x.java
-##.image image.jpg
-##.background image.jpg
-##.iframe http://foo
-#.link http://foo label
-##.html file.html
-#.caption _Gopher_ by [[https://www.instagram.com/reneefrench/][Renée French]]
-#
-#Again, more text
+* 
+
+* Additional Resources
+
+* Additional Resources
+
+https://training.play-with-docker.com training.play-with-docker.com has practical exercises with step-by-step instructions
+
+.link https://training.play-with-docker.com training.play-with-docker.com has practical exercises with step-by-step instructions
+
+
+* Special thanks
+
+Special thanks to Adao Oliveira Junior for helping me put more great resources into this presentation!
 
 * References
 

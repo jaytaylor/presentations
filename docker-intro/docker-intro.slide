@@ -71,7 +71,9 @@ _The_other_parts_
  Containerization brings with it complexity, which needs to be actively considered and
  managed.
 
-Time permitting, additional 'gotchas' will be covered at the end.
+As always in engineering, there are tradeoffs to consider.
+
+# Time permitting, additional 'gotchas' will be covered at the end.
 
 * How did we get here?
 
@@ -179,19 +181,14 @@ Initially Docker used LXC under the covers, and later transitioned to Docker's o
 
 * Cool, let's get down to business
 
-* Getting Your Bearings
+* Getting Our Bearings
 
-* What will be covered
+* What we'll cover
 
-*Basics*
+- Problem statement
+- Definitions and concepts
 
-- Listing images and containers
-- Pulling an image
-- Running an image
-
-* What will be covered
-
-Basics
+*Specific* *Examples*
 
 - Listing available images
 - Listing running containers
@@ -203,9 +200,67 @@ Basics
 
 Time permitting.
 
+* The Problem
+
+*Shipping* *code* *to* *server.*
+
+.image img/shipping.png
+
+* Dependency Matrix Hell
+
+.image img/matrix.png
+
+* The Solution
+
+.image img/solution.png
+
+* Containers are not VMs
+
+- Easy connection to make
+
+- Fundamentally different architectures
+
+- Fundamentally different benefits and tradeoffs
+
+* VMs
+
+.image img/vms.png
+
+* Containers
+
+.image img/containers.png
+
+* Different charactistics with overlap
+
+.image img/overlap.png
+
+* Docker Concepts
+
+* Images
+
+A container image is analogous to an exported Virtual Machines VHD or OVH + config files.
+
+They serve as templates for stamping out containers.
+
+Can depend (i.e. 'inherit') from other images.
+
+Can be created via Dockerfiles or by capturing the state of a running container.
+
+* Dockerfile
+
+- Definition of properties and instructions for docker to build a new container image.
+
+FROM oel7
+
+* Registry
+
+
+
 * List local docker images
 
-`docker` `images` displays an inventory of images available on the machine.
+Images are used as the base when creating a container.
+
+The `docker` `images` command displays an inventory of images available on the machine.
 
  $ docker images
  REPOSITORY               TAG       IMAGE ID            CREATED             SIZE
@@ -477,9 +532,9 @@ Let's you see facts like the default command the container will start with, and 
 
 * Additional Resources
 
-https://training.play-with-docker.com training.play-with-docker.com has practical exercises with step-by-step instructions
+.link https://play-with-docker.com Play with docker for free in your web browser @ play-with-docker.com
 
-.link https://training.play-with-docker.com training.play-with-docker.com has practical exercises with step-by-step instructions
+.link https://training.play-with-docker.com/dev-landing training.play-with-docker.com has lots of practical and informative exercises with step-by-step instructions
 
 
 * Special thanks

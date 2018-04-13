@@ -1,0 +1,118 @@
+History of Containerization
+A quick review
+12 Apr 2018
+Tags: Docker, Linux Containers
+
+Jay Taylor
+Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
+jay.taylor@oracle.com
+
+
+* How did we get here?
+
+** Quick history review
+
+* 1979: Unix V7
+
+The `chroot()` system call was first introduced during the development of Unix V7.
+
+In 1982 it was also added to BSD.
+
+Invoking `chroot()` changes the apparent root directory for the current running process and its children, effectively providing a layer of isolation from the rest of the system.
+
+* 2000: FreeBSD Jails
+
+Nearly 20 years later, a small shared-environment hosting provider came up with FreeBSD jails to keep its services and customers separate.
+
+`chroot` `jails` were a pretty slick way to securely share computing resources.
+
+.link http://phk.freebsd.dk/pubs/sane2000-jail.pdf Y2K Jails
+
+* 2001: Linux VServer
+
+Implemented as a Linux Kernel Patch, Linux VServer is a jail mechanism which can partition:
+
+- File Systems
+- Network Addresses
+- System Memory
+
+* 2004: Oracle Solaris Zones
+
+In 2004 Oracle released container functionality in Solaris that combined system resource controls and boundary separation.
+
+.image img/solaris-containers.jpg
+
+
+#* 2005: Open VZ (Open Virtuzzo)
+#
+#A Linux Kernel Patch for OS-level virtualization.
+#Never merged into Linux Kernel.
+
+
+* 2006: Process Containers, AKA Linux CGroups
+
+Google launched `Process` `Containers` in 2006, and later renamed the project to `CGROUPS` (Control Groups).
+
+`CGROUPS` are designed to limit, isolate, and account for usage of system resources.
+
+- CPU
+- Memory
+- Disk I/O
+- Network
+
+Merged into the Linux Kernel a year later.
+
+* 2008: LXC
+
+LXC (LinuX Containers) was the first (mostly) complete implementation of Linux Container Manager.
+
+Implemented using cgroups and Linux namespaces, and it works on a single Linux kernel without requiring any patches. 
+
+* 2009: Heroku
+
+_Containers_meet_SaaS_
+
+In 2009 the Heroku PaaS launched, and over subsequent years became a huge success with developers all over the world.
+
+Deploying became as simple as `git` `push` `heroku`.
+
+Acquired by Salesforce in 2010.
+
+Heroku was what first got me really curious and ultimately excited about Platform-as-a-Service.  "How do they make this work?", I couldn't help but wonder.
+
+* 2013: LMCTFY
+
+`LMCTFY` stands for "Let Me Control That For You", and was released in 2013 as an open-source version of the Google Container Stack.  Written in C++
+
+Development ceased in 2015 when Google altered course and began contributing to `libcontainer`, which has now become part of the Open Container Foundation.
+
+.link https://github.com/google/lmctfy LMCTFY source code (primarily C++)
+
+* 2013: Enter Docker
+
+.image img/shykes.jpg
+
+* 2013: Enter Docker, cont'd..
+
+Docker was created and first released by Solomon Hykes in 2013.
+
+After starting out years earlier as a way to have git-like version control for an entire operating system, by 2013 Docker had evolved into a serious contender in the container space.
+
+Initially Docker used LXC under the covers, and later transitioned to Docker's own in-house container manager, `libcontainer`.
+
+* 2015: A Container E X P L O S I O N 
+
+* 
+
+*Container* *Wars.*
+
+*Docker* *vs.* *CoreOS* */* *Rkt*
+
+*Docker* *vs.* *LXC* *v2*
+
+*Apache* *Mesos* *vs.* *Kubernetes*
+
+* References
+
+.link https://blog.aquasec.com/a-brief-history-of-containers-from-1970s-chroot-to-docker-2016 A Brief History of Containers from 1970s Chroot to Docker 2016
+

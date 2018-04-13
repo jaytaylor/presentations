@@ -7,198 +7,31 @@ Jay Taylor
 Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
 jay.taylor@oracle.com
 
-* Container-based virtualization has showed incredible staying power, and remains one of the hottest (and sometimes most controverisal) technologies in cloud computing.
-
-* What we're going to cover
-
-* Agenda
-
-- About Docker
-- Explain some of the ideas and motivation behind containers
-- Quick review of the history of containers
-- Demonstration of Docker basics
-- Advanced Topics
-- Exercises for you to try
-- Additional Resources
-
-* About Docker
-
-Docker is a tool designed to make it easy to create, deploy, and run applications through the use of containers.
-
-.image img/docker.jpg
-
-* Okay, so what is a container?
-
-* 
-
-*Conceptually,* *think* *of* *a* *container* *as* *a* *fully* *self-contained* *executable.*
-
-* 
-
-Conceptually, think of containers as a fully self-contained executable.
-
-*You* *can* *also* *think* *of* *a* *container* *as* *a* *very* *lightweight* *VM* *that* *"boots"* *in* *just* *a* *few* *seconds.*
-
-* 
-
-Conceptually, think of containers as a fully self-contained executable.
-
-You can also think of a container as a very lightweight VM that "boots" in just a few seconds.
-
-*A* *container* *holds* *a* *base* *operating* *system* *and* *the* *entirety* *of* *a* *program,* *including* *all* *dependencies* *needed* *at* *runtime.*
-
-* 
-
-Conceptually, think of containers as a fully self-contained executable.
-
-You can also think of a container as a very lightweight VM that "boots" in just a few seconds.
-
-A container holds a base operating system and the entirety of a program, including all dependencies needed at runtime.
-
-*Containers* *can* *be* *distributed* *to* *different* *machines* *and* *run* *without* *downloading* *or* *installing* *any* *additional* *packages* *or* *dependencies.*
-
-* The Good Parts
-
-- Docker images are all run in a standardized way, making them easy to consume compared to raw binaries or python scripts with possibly missing dependencies.
-- Reduced pollution on your machine: No more installing tons of dependencies just to try out one thing only to discover it didn't do what you want.
-- Powerful and useful abstraction and primitive building block for architecting and operating production infrastructure at scale*.
-
-_The_other_parts_
-
- * Containerization is definitely a double-edged sword, cannot blindly stuff dockers in
- and expect things to turn out maximally awesome.
- 
- Containerization brings with it complexity, which needs to be actively considered and
- managed.
-
-As always in engineering, there are tradeoffs to consider.
-
-# Time permitting, additional 'gotchas' will be covered at the end.
-
-* How did we get here?
-
-** Quick history review
-
-* 1979: Unix V7
-
-The `chroot()` system call was first introduced during the development of Unix V7.
-
-In 1982 it was also added to BSD.
-
-Invoking `chroot()` changes the apparent root directory for the current running process and its children, effectively providing a layer of isolation from the rest of the system.
-
-* 2000: FreeBSD Jails
-
-Nearly 20 years later, a small shared-environment hosting provider came up with FreeBSD jails to keep its services and customers separate.
-
-`chroot` `jails` were a pretty slick way to securely share computing resources.
-
-.link http://phk.freebsd.dk/pubs/sane2000-jail.pdf Y2K Jails
-
-* 2001: Linux VServer
-
-Implemented as a Linux Kernel Patch, Linux VServer is a jail mechanism which can partition:
-
-- File Systems
-- Network Addresses
-- System Memory
-
-* 2004: Oracle Solaris Zones
-
-In 2004 Oracle released container functionality in Solaris that combined system resource controls and boundary separation.
-
-.image img/solaris-containers.jpg
-
-
-#* 2005: Open VZ (Open Virtuzzo)
+#* Who am I?
 #
-#A Linux Kernel Patch for OS-level virtualization.
-#Never merged into Linux Kernel.
+#Worked at many startups
 
-
-* 2006: Process Containers, AKA Linux CGroups
-
-Google launched `Process` `Containers` in 2006, and later renamed the project to `CGROUPS` (Control Groups).
-
-`CGROUPS` are designed to limit, isolate, and account for usage of system resources.
-
-- CPU
-- Memory
-- Disk I/O
-- Network
-
-Merged into the Linux Kernel a year later.
-
-* 2008: LXC
-
-LXC (LinuX Containers) was the first (mostly) complete implementation of Linux Container Manager.
-
-Implemented using cgroups and Linux namespaces, and it works on a single Linux kernel without requiring any patches. 
-
-* 2009: Heroku
-
-_Containers_meet_SaaS_
-
-In 2009 the Heroku PaaS launched, and over subsequent years became a huge success with developers all over the world.
-
-Deploying became as simple as `git` `push` `heroku`.
-
-Acquired by Salesforce in 2010.
-
-Heroku was what first got me really curious and ultimately excited about Platform-as-a-Service.  "How do they make this work?", I couldn't help but wonder.
-
-* 2013: LMCTFY
-
-`LMCTFY` stands for "Let Me Control That For You", and was released in 2013 as an open-source version of the Google Container Stack.  Written in C++
-
-Development ceased in 2015 when Google altered course and began contributing to `libcontainer`, which has now become part of the Open Container Foundation.
-
-.link https://github.com/google/lmctfy LMCTFY source code (primarily C++)
-
-* 2013: Enter Docker
-
-.image img/shykes.jpg
-
-* 2013: Enter Docker, cont'd..
-
-Docker was created and first released by Solomon Hykes in 2013.
-
-After starting out years earlier as a way to have git-like version control for an entire operating system, by 2013 Docker had evolved into a serious contender in the container space.
-
-Initially Docker used LXC under the covers, and later transitioned to Docker's own in-house container manager, `libcontainer`.
-
-* 2015: A Container E X P L O S I O N 
-
-* 
-
-*Container* *Wars.*
-
-*Docker* *vs.* *CoreOS* */* *Rkt*
-
-*Docker* *vs.* *LXC* *v2*
-
-*Apache* *Mesos* *vs.* *Kubernetes*
-
-* Cool, let's get down to business
-
-* Getting Our Bearings
+* Container-based virtualization has showed incredible staying power, and remains one of the hottest (and sometimes most controverisal) technologies in cloud computing.
 
 * What we'll cover
 
-- Problem statement
+* Agenda
+
+- Problem statement (and proposed solution)
+
+- Explain some of the ideas and motivation behind containers
+
+- About Docker
+
 - Definitions and concepts
 
-*Specific* *Examples*
+- Demonstration of Docker basics
 
-- Listing available images
-- Listing running containers
-- Pulling an image
-- Running an image
-- Running interactive sessions
+#- Advanced Topics
 
-*Advanced* *Topics*
+#- Exercises for you to try
 
-Time permitting.
+- Additional Resources (includes exercises for you try!)
 
 * The Problem
 
@@ -230,15 +63,77 @@ Time permitting.
 
 .image img/containers.png
 
-* Different charactistics with overlap
+* Different, Not Mutually Exclusive
 
 .image img/overlap.png
+
+* About Docker
+
+Docker is a tool designed to make it easy to create, deploy, and run applications through the use of containers.
+
+.image img/docker.jpg
+
+* Okay, so what exactly is a container?
+
+* 
+
+.image img/docker-logo.png
+
+*Conceptually,* *think* *of* *a* *container* *as* *a* *fully* *self-contained* *executable.*
+
+* 
+
+.image img/docker-logo.png
+
+Conceptually, think of containers as a fully self-contained executable.
+
+*You* *can* *also* *think* *of* *a* *container* *as* *a* *very* *lightweight* *VM* *that* *boots* *in* *only* *a* *few* *seconds.*
+
+* 
+
+.image img/docker-logo.png
+
+Conceptually, think of containers as a fully self-contained executable.
+
+You can also think of a container as a very lightweight VM which boots in only a few seconds.
+
+*A* *container* *holds* *a* *base* *operating* *system* *and* *the* *entirety* *of* *a* *program,* *including* *all* *dependencies* *needed* *at* *runtime.*
+
+#* 
+#
+#.image img/docker-logo.png
+#
+#Conceptually, think of containers as a fully self-contained executable.
+#
+#You can also think of a container as a very lightweight VM that boots in only a few seconds.
+#
+#A container holds a base operating system and the entirety of a program, including all dependencies needed at runtime.
+#
+#*Containers* *can* *be* *distributed* *to* *different* *machines* *and* *run* *without* *downloading* *or* *installing* *any* *additional* *packages* *or* *dependencies.*
+
+* The Good Parts
+
+- Docker images are all run in a standardized way, making them easy to consume compared to raw binaries or python scripts with possibly missing dependencies.
+- Reduced pollution on your machine: No more installing tons of dependencies just to try out one thing only to discover it didn't do what you want.
+- Powerful abstraction and building block for architecting and operating production infrastructure at scale.
+
+_The_other_parts_
+
+Containerization is definitely a double-edged sword, cannot blindly stuff dockers in and expect things to turn out maximally awesome.
+ 
+Containerization brings with it complexity, which needs to be actively considered and managed.
+
+As always, there are tradeoffs to consider.
+
+# Time permitting, additional 'gotchas' will be covered at the end.
+
+#* Cool, let's get down to business
 
 * Docker Concepts
 
 * Images
 
-A container image is analogous to an exported Virtual Machines VHD or OVH + config files.
+A container image is analogous to an exported Virtual Machines VHD + config files.
 
 They serve as templates for stamping out containers.
 
@@ -246,15 +141,67 @@ Can depend (i.e. 'inherit') from other images.
 
 Can be created via Dockerfiles or by capturing the state of a running container.
 
-* Dockerfile
+* Dockerfiles
 
-- Definition of properties and instructions for docker to build a new container image.
+Definition of properties and instructions for docker to build a new image.
 
-FROM oel7
+Usually placed in a file named "Dockerfile".
+
+Example:
+
+ FROM oracle-linux:7
+ 
+ ENV JAVA_HOME /usr/jdk1.8.0_161
+ 
+ RUN curl \
+     -sSL
+     "https://java.oracle.com/jdk8.tar.gz" \
+     | gunzip \
+     | tar x -C /usr/ \
+     && ln -s $JAVA_HOME /usr/java
+ 
+ ENV PATH ${PATH}:${JAVA_HOME}/bin
 
 * Registry
 
+- Docker Inc. runs the official public registry server at https://hub.docker.com
 
+.link https://hub.docker.com hub.docker.com
+
+- Official images from known vendors
+
+- Share and download docker container images from anywhere in the world
+
+
+* Basic Docker Commands
+
+ $ docker pull        # Download an image from a registry
+ $ docker images      # List all images on a Docker host
+ $ docker build       # Build an image from a Dockerfile
+ $ docker run         # Run an image
+ $ docker start       # Starts an existing container
+ $ docker commit      # Create an image from a container
+ $ docker ps          # List all running and stopped container instances
+ $ docker stop        # Stop a running container instance
+ $ docker rm          # Remove a container instance
+ $ docker rmi         # Remove an image
+
+
+* Diving in
+
+#* What we'll cover
+
+*Specific* *Examples*
+
+- Listing available images
+- Listing running containers
+- Pulling an image
+- Running an image
+- Running interactive sessions
+
+#*Advanced* *Topics*
+#
+#Time permitting.
 
 * List local docker images
 
@@ -297,9 +244,7 @@ Here is an example from a live Kubernetes cluster:
 
 * Pull an image
 
-`docker` `pull` `[image-name-here]` downloads a docker image from a server.
-
-In docker lingo, these servers are called "registries".
+`docker` `pull` `[image-name]` downloads a docker image from a registry server.
 
  $ docker pull tutum/curl
  Using default tag: latest
@@ -517,30 +462,27 @@ Let's look at a few real-world examples.
              "AttachStdin": false,
  ...
 
-Let's you see facts like the default command the container will start with, and tons of metadata useful for detective work.
+Provides visibility into object properties, e.g. the default command the container will start with, and hordes of other useful metadata.
 
-* 
+#* 
 
-* Attach to a running container interactively
+#* Attach to a running container interactively
 
-
-* Exercises for you to try
-
-* 
 
 * Additional Resources
 
-* Additional Resources
+.link https://training.play-with-docker.com/dev-landing training.play-with-docker.com is completely free and has lots of practical, informative exercises with step-by-step instructions
 
 .link https://play-with-docker.com Play with docker for free in your web browser @ play-with-docker.com
 
-.link https://training.play-with-docker.com/dev-landing training.play-with-docker.com has lots of practical and informative exercises with step-by-step instructions
+#.image img/training.png
+
+#* 
+
+#* Additional Resources
 
 
 * Special thanks
 
 Special thanks to Adao Oliveira Junior for helping me put more great resources into this presentation!
 
-* References
-
-.link https://blog.aquasec.com/a-brief-history-of-containers-from-1970s-chroot-to-docker-2016 A Brief History of Containers from 1970s Chroot to Docker 2016

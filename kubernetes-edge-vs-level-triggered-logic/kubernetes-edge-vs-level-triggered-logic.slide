@@ -1,0 +1,103 @@
+Kubernetes: Edge vs. Level Triggered Logic
+Tags: Kubernetes
+
+Jay Taylor
+Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
+jay.taylor@oracle.com
+
+* Edge vs. Level Triggered Logic
+
+Once upon a time, there was hardware.
+
+When the hardware needed attention, it would signal the CPU via an "interrupt".
+
+Interrupts used to be a physical wire from the device to the CPU.
+
+.image img/device-cpu-interrupt-line.png
+.caption Physical interrupt line between device and CPU
+
+* Edge vs. Level Triggered Logic
+
+The device can change the voltage on the wire.
+
+The CPU can detect changes in voltage.
+
+.image img/edge-pulse.png
+.caption Edge triggered pulse
+
+* Edge vs. Level Triggered Logic
+
+Straightforward: the device "pulses" the interrupt line
+
+The CPU reacts
+
+This is *Edge* *Triggered*
+
+* Edge vs. Level Triggered Logic
+
+Straightforward: the device "pulses" the interrupt line
+
+The CPU reacts
+
+This is *Edge* *Triggered*
+
+.image img/device-cpu-edge-pulse.png
+.caption Example of an edge triggered pulse from a device to CPU
+
+* Edge vs. Level Triggered Logic
+
+*Problem:* What happens if the CPU doesn't detect a pulse?
+
+The interrupt doesn't get serviced!
+
+* Edge vs. Level Triggered Logic
+
+*Problem:* What happens if the CPU doesn't detect a pulse?
+
+The interrupt doesn't get serviced!
+
+*How* *can* *we* *solve* *this?*
+
+* Edge vs. Level Triggered Logic
+
+*Solution:*
+
+.image img/level.png
+.caption Level triggered interrupt
+
+* Edge vs. Level Triggered Logic
+
+The device can change the voltage and keep it there until the interrupt is serviced
+
+Now the CPU can't / won't miss interrupts
+
+The device can "stack" interrupt reasons by leaving the voltage until all reasons are ACK'ed
+
+This is *Level* *Triggered*
+
+* Edge vs. Level Triggered Logic
+
+The device can change the voltage and keep it there until the interrupt is serviced
+
+Now the CPU can't / won't miss interrupts
+
+The device can "stack" interrupt reasons by leaving the voltage until all reasons are ACK'ed
+
+This is *Level* *Triggered*
+
+.image img/device-cpu-level.png
+.caption Example of a level triggered interrupt from device to CPU
+
+* What does this mean for Kubernetes?
+
+- State is more useful than events
+
+- Level-driven software is about asserting state
+
+- Clients can check and re-check state at any time
+
+- This is the heart of the Kubernetes controller model
+
+* References
+
+.link https://speakerdeck.com/thockin/edge-vs-level-triggered-logic Edge vs. Level Triggered Logic by Tim Hockins

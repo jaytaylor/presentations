@@ -1,0 +1,440 @@
+Introduction to Kubernetes
+19 Apr 2018
+Tags: Kubernetes, Linux Containers
+
+Jay Taylor
+Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
+jay.taylor@oracle.com
+
+# Outline:
+#
+# - Recap about containers, prime the audience for kubernetes
+# - Fundamental concepts
+#     - Deployment (from simple SSH to containerized kubernetes)
+#     - Orchestration
+#     - Bin packing problem
+# - Kubernetes definition
+# - About Kubernetes
+# - Kubernetes philosophy
+#     - Level-driven software is about asserting state
+# - Kubernetes-specific concepts and terminology
+#     - Primitives (This list may be pruned down if it seems like too much)
+#         - Kube master and worker nodes
+#         - Pod
+#         - Deployment
+#         - Service
+#         - Ports
+#         - Flannel Overlay Networking
+#         - Taints
+#         - Labels and constraints
+# - Discuss how to interact with kubernetes
+#     - kubectl
+#     - YAML
+# - Live Exercises (some of these will be a preview of content to be covered in-depth in future presentations)
+#     - View cluster state
+#     - Get logs for a pod
+#     - Install a helm chart
+#     - Scale a pod
+#
+#
+# From Stuart:
+#
+# - Config maps and secrets
+# - Ingress
+# - Volumes (differences to Docker volumes)
+# - Probes
+# - Init Containers
+# - Resource management overview
+#     - memory + CPU
+#     - requests vs limits
+#     - system reserved
+#     - how k8s determines what goes where (at a high level)
+# 
+# FWIW, it sounds like I need to attend k8s 101 as I am not too familiar with some of these subjects.
+# 
+# I would suggest NOT installing a helm chart until after Helm 101 - you might startle the animals ;-)
+#
+#
+
+* Agenda
+
+- Recap: Containers, Linux Kernel Features
+- Concepts: Deployment, Orchestration, Clusters, Bin Packing
+- About Kubernetes
+- Kubernetes: Fundamental Concepts and Primitives
+- Creating a deployment
+- Interacting with Kubernetes
+- Live Demos
+- Preview of upcoming future topics
+- Questions
+- Further Reading
+
+* Recap: Containers
+
+A container is a lightweight, stand-alone, executable package of a piece of software that includes everything needed to run it
+
+- No matter what language you're writing in, take that application, package it into a container, and then run it on your laptop or any cloud provider
+
+- Kind of like a phone app in that you press a button, the app just "shows up", simple
+
+.image img/docker-containers.jpg
+
+* Recap: Linux Kernel Features
+
+cgroups:
+
+- Resource limiting, tracking, prioritization, and isolation
+- CPU, RAM, IO, Networking
+
+namespaces:
+
+- Resource visibility and naming isolation
+- network, PID, users, mounts
+- "chroot++"
+
+cgroups + namespaces = "lightweight virtualization"
+
+#* Docker <-> Linux Kernel
+#
+#.image img/docker-cake.png
+
+#* Recap: Developer Experience
+#
+#Docker has become synonymous with Linux Containers
+#
+#- _Image_format_: Upload, download, share, build
+#- API: Automatable create, delete, start, stop
+#- Networking: Good defaults
+
+* Kubernetes Concepts
+
+- Application Deployment
+
+- Visibility
+
+- Cluster Management
+
+* Deployment Options
+
+* Simplest possible method
+
+.image img/ssh.png
+#.caption `SSH` into a machine and run a command to start a docker container.
+
+`SSH` into machine(s) and run a command to start a docker container.
+
+*Pros*
+
+Dead simple, minimal special knowledge needed
+
+*Cons*
+
+Not automated, not reproducible, doesn't scale, difficult to know what is running and where when number of machines > 1
+
+* Scripts
+
+.image img/script.png
+
+A common and intuitive way to get containers up and running.
+
+Involves standalone shell scripts or fancier automation.
+
+Some examples are: Capistrano, Puppet, Chef, and Ansible
+
+*Pros*
+
+Can be integrated and adapted to existing environments, easy to understand, reproducible
+
+*Cons*
+
+Doesn't scale, no self-healing, generally non-portable
+
+* Orchestration Systems
+
+Automatically match containers to available machines
+
+Apache Mesos, Kubernetes, HashiCorp Nomad, Rancher, home-grown systems.
+
+*Pros*
+
+Automated, reproducible, self-healing, scalable, portable
+
+*Cons*
+
+Overhead, new tooling and training, higher degree of complexity
+
+* What's in an Orchestration System?
+
+.image img/conductor.jpg
+
+* Basic Features
+
+*Scheduling:* Match containers to machines by..
+
+- Resource needs (CPU, Memory)
+- Affinity requirements (put X near Y)
+- Labels (put X on a "test" machine)
+
+*Replication:* Run _N_ copies
+
+*Handle* *machine* *failures*
+
+*Discovery:* Find peers and services in the cluster
+
+*Visibility:* Show me what is happening
+
+* Advanced Features
+
+- Integrated load-balancers
+
+- Automated updates
+
+- Cluster auto-scaling: better utilization
+
+- App auto-scaling: handle spikes and troughs
+
+- Provision storage
+
+- Repacking machines
+
+- Late-binding configuration (resolving configuration values at moment containers are launched)
+
+* Make better use of human time
+
+.image img/busy.jpg
+
+These are things that were historically managed by humans at human speed
+
+Orchestration can handle many situations for you automatically - turning 3am pages into advisory emails
+
+* Diving In
+
+* 
+
+.image img/kubernetes-logo.png
+
+* Kubernetes
+
+*About*
+
+Kubernetes is a platform for managing containerized services.
+
+- Open-sourced by Google in 2014
+- Written in Go
+- Builds on 1.5 decades of experience and lessons from Google's Borg & Omega platforms
+
+(Borg is the cluster manager and Omega is the scheduler that _all_of_Google_ runs on)
+
+- Now owned by the Cloud Native Computing Foundation (www.cncf.io)
+
+In the past 4 years Kubernetes has taken off like a rocket.
+
+PaaS space dominator, massive community and mindshare.
+
+* Kubernetes
+
+*Definition*
+
+Kubernetes is ancient Greek for "Helmsman". Root of the word "Governor", "Cybernetics".
+
+* Diving In
+
+* The Goal
+
+.image img/goal.jpg
+
+Manage *applications*, not machines.
+
+* What Kubernetes will actually do for you
+
+- Places containers on nodes
+- Enable containers to find and communicate with each other
+- Track resource health
+- Recover automatically from failures
+- Plug into monitoring and logging aggregation
+
+* Kubernetes Terminology and Primitives
+
+* Pods
+
+.image img/pod-of-whales.jpg
+
+A Pod is the basic building block of Kubernetes – the smallest and simplest unit in the Kubernetes object model that you create or deploy.
+
+A Pod represents a running process on your cluster.
+
+# A pod (as in a "pod of whales" or "pea pod") is a group of one or more containers with shared storage/network, and a specification for how to run the containers.
+# 
+# A pod's contents are always co-located and co-scheduled to run on the same host.
+
+To begin with, an easy way to think about it is: 1 Pod = 1 application process.
+
+(There are links to more information about Pods in the "Further Reading" section)
+
+* Example Pod
+
+    # file: pod-nginx.yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
+
+* Example Pod
+
+    # file: pod-nginx.yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
+
+Note: Kubernetes descriptors can be in `YAML` or `JSON` format.
+
+(default = `YAML`)
+
+* Deployments
+
+A Deployment instructs Kubernetes how to create and update instances of your application.
+
+Once you've created a Deployment, the Kubernetes master schedules mentioned application instances onto individual Nodes in the cluster.
+
+* Example Deployment
+
+    # file: nginx-deployment.yaml
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: nginx-deployment
+    spec:
+      selector:
+        matchLabels:
+          app: nginx
+      replicas: 2    # Tells deployment to run 2 pods matching the template.
+      template:      # Create pods using pod definition in this template.
+        metadata:    # ---
+                     # Unlike pod-nginx.yaml, the name is not included in the
+                     # meta data as a unique name is generated from the
+          labels:    # deployment name.
+            app: nginx
+        spec:
+          containers:
+            - name: nginx
+              image: nginx:1.7.9
+              ports:
+                - containerPort: 80
+
+`echo` `'<paste-the-yaml>'` `|` `kubectl` `create` `-f` `-`
+
+* Interacting with Kubernetes
+
+* kubectl
+
+ ...
+
+* Inspecting cluster state
+
+ $ kubectl get pods
+ NAME                                    READY     STATUS             RESTARTS   AGE
+ bots-config-1915592451-l8hwp            0/1       CrashLoopBackOff   65         5h
+ bots-connectors-1842008696-hwj2z        0/1       Running            32         5h
+ bots-intent-server-1305146671-grtn7     0/1       Running            31         5h
+ bots-management-apis-86372746-2q0nd     0/1       Running            31         5h
+ bots-pipeline-3794973406-0l56q          0/1       Running            31         5h
+ bots-qna-server-4058573237-d5swm        0/1       Running            31         5h
+ elasticsearch-client-3051846693-wvxhv   1/1       Running            0          6d
+ elasticsearch-data-3498133568-kslzc     1/1       Running            0          6d
+ elasticsearch-master-1296020593-3f7qk   1/1       Running            0          6d
+ hdfs-datanode-0                         1/1       Running            0          5d
+ hdfs-namenode-0                         1/1       Running            0          5d
+ kafka-broker-0                          1/1       Running            2          6d
+ kafka-zookeeper-0                       1/1       Running            0          6d
+
+* Viewing pod logs
+
+Super easy!
+
+Once you know the name of the pod of interest, run:
+
+`kubectl` `logs` `<pod>`
+
+or to emulate `tail` `-f` with:
+
+`kubectl` `logs` `-f` `<pod>`
+
+* Viewing pod logs
+
+ $ kubectl logs kafka-broker-0
+ + kafka-server-start.sh /etc/kafka/server.properties --override zookeeper.connect=kafka-zookeeper:2181 --override zookeeper.connection.timeout.ms=6000 --override broker.id=0 --override log.dirs=/var/lib/kafka --override inter.broker.protocol.version=0.11.0 --override offsets.topic.replication.factor=1 --override transaction.state.log.replication.factor=3
+ [2018-04-12 20:43:05,006] INFO KafkaConfig values:
+ 	advertised.host.name = null
+ 	advertised.listeners = null
+ 	advertised.port = null
+ 	alter.config.policy.class.name = null
+ 	authorizer.class.name =
+ 	auto.create.topics.enable = false
+ 	auto.leader.rebalance.enable = true
+ 	background.threads = 10
+ ...
+
+* Now that you've seen all that..
+
+It's true, there are a lot more 
+
+* Upcoming Tech Talk Topics
+
+- Kubernetes components deep-dive
+- Troubleshooting
+- Breaking and fixing the cluster tasks
+- Breaking and fixing worker nodes
+- Helm Charts
+
+# What
+
+# Bakes in a lot of the learning from Google, RedHat and CoreOS.
+
+
+
+# Notes:
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+* Further Reading
+
+*Pods*
+
+.link https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/ Kubernetes Pod Overview
+.link https://kubernetes.io/docs/concepts/workloads/pods/pod/ Kubernetes Pod
+
+
+
+* References
+
+

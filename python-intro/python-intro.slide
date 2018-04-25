@@ -1,0 +1,20 @@
+Introduction to Kubernetes
+19 Apr 2018
+Tags: Kubernetes, Linux Containers
+
+Jay Taylor
+Senior Engineering Manager, Intelligent Chat Bots Service, Oracle
+jay.taylor@oracle.com
+
+# Outline:
+#
+#
+
+* Python Pain
+
+3 biggest pain points / worse use-cases I’ve had to do with python:
+
+1. Runtime errors which would have been caught in a typed language (e.g. type errors, invoking non-existant method or function, non-existent variable references) 
+2. For high-scale websites, it gets super expensive to run with python because it’s so slow that you have to throw much more resources at it compared to most other languages.  The only worse offender, resource-wise, might be Ruby.
+3. Global Interpreter Lock (GIL) makes proper multi-threading impossible, so parallel / concurrent operations involve inelegant kludge solutions.
+

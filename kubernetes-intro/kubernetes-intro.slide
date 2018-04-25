@@ -59,19 +59,22 @@ jay.taylor@oracle.com
 * Agenda
 
 - Recap: Containers, Linux Kernel Features
-- Concepts: Deployment, Orchestration, Clusters, Bin Packing
+- Concepts: Deployment, Orchestration & Scheduling, Bin-packing
+#- Concepts: PaaS, Deployment, Orchestration & Scheduling, Bin-packing
 - About Kubernetes
-- Kubernetes: Fundamental Concepts and Primitives
+- Kubernetes: Primitives and Fundamentals
 - Creating a deployment
 - Interacting with Kubernetes
 - Live Demos
-- Preview of upcoming future topics
+- Preview of next session
 - Questions
-- Further Reading
+- Additional Learning Resources
 
 * Recap: Containers
 
-A container is a lightweight, stand-alone, executable package of a piece of software that includes everything needed to run it
+A container is a lightweight, stand-alone, executable package of a piece of software
+
+- A container image includes all dependencies necessary to run it
 
 - No matter what language you're writing in, take that application, package it into a container, and then run it on your laptop or any cloud provider
 
@@ -84,7 +87,7 @@ A container is a lightweight, stand-alone, executable package of a piece of soft
 cgroups:
 
 - Resource limiting, tracking, prioritization, and isolation
-- CPU, RAM, IO, Networking
+- CPU, RAM, I/O, Networking
 
 namespaces:
 
@@ -106,22 +109,40 @@ cgroups + namespaces = "lightweight virtualization"
 #- API: Automatable create, delete, start, stop
 #- Networking: Good defaults
 
-* Kubernetes Concepts
 
-- Application Deployment
+
+* Concepts
+
+# - PaaS
+
+- Deployment
+
+- Bin-packing
+
+- Orchestration
+
+- Scheduling
 
 - Visibility
 
 - Cluster Management
 
+# * PaaS
+
+# Stands for *Platform* *as* *a* *Service*
+
+# The idea is that deployments are 
+
 * Deployment Options
 
-* Simplest possible method
+* From Simplest to Cutting-Edge
+
+* Manual
 
 .image img/ssh.png
 #.caption `SSH` into a machine and run a command to start a docker container.
 
-`SSH` into machine(s) and run a command to start a docker container.
+`SSH`'s into machine(s) and manually run a command to start a docker container
 
 *Pros*
 
@@ -135,15 +156,15 @@ Not automated, not reproducible, doesn't scale, difficult to know what is runnin
 
 .image img/script.png
 
-A common and intuitive way to get containers up and running.
+A common and intuitive way to get containers up and running
 
-Involves standalone shell scripts or fancier automation.
+Involves standalone shell scripts or fancier automation
 
 Some examples are: Capistrano, Puppet, Chef, and Ansible
 
 *Pros*
 
-Can be integrated and adapted to existing environments, easy to understand, reproducible
+Easy to understand, reproducible, Can be integrated and adapted to existing environments
 
 *Cons*
 
@@ -237,8 +258,6 @@ PaaS space dominator, massive community and mindshare.
 
 Kubernetes is ancient Greek for "Helmsman". Root of the word "Governor", "Cybernetics".
 
-* Diving In
-
 * The Goal
 
 .image img/goal.jpg
@@ -252,6 +271,21 @@ Manage *applications*, not machines.
 - Track resource health
 - Recover automatically from failures
 - Plug into monitoring and logging aggregation
+
+* Cluster Composition
+
+.image img/kube-arch.png
+.caption Kubernetes Cluster Physical Layout
+
+* Cluster Composition - Alt View
+
+.image img/kube-1000-ft.png
+.caption Kubernetes Cluster Physical Layout
+
+* Cluster Composition - Dev Perspective
+
+.image img/kube-dev.png
+.caption Kubernetes from a developers perspective
 
 * Kubernetes Terminology and Primitives
 
@@ -269,7 +303,7 @@ A Pod represents a running process on your cluster.
 
 To begin with, an easy way to think about it is: 1 Pod = 1 application process.
 
-(There are links to more information about Pods in the "Further Reading" section)
+(There are links to more information about Pods in the "Additional Learning Resources" section)
 
 * Example Pod
 
@@ -399,42 +433,22 @@ It's true, there are a lot more
 - Breaking and fixing worker nodes
 - Helm Charts
 
-# What
+* Additional Learning Resources
 
-# Bakes in a lot of the learning from Google, RedHat and CoreOS.
+*Educational*
 
+.link https://www.youtube.com/watch?v=kOa_llowQ1c Kelsey Hightower presents: Kubernetes The Easy Way (Video, duration: 18mins)
+.caption (Kelsey is a distributed-computing evangelist _and_ _LEGEND_!)
 
+.link https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/ Kubernetes Pod Overview (Docs)
+.link https://kubernetes.io/docs/concepts/workloads/pods/pod/ Kubernetes Pod (Docs)
 
-# Notes:
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+*Kubernetes* *@* *Oracle*
+.link https://docs.oracle.com/cd/E52668_01/E88884/html/ OEL7 Kubernetes (User Guide)
 
-* Further Reading
+*Reference* *Slides*
 
-*Pods*
-
-.link https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/ Kubernetes Pod Overview
-.link https://kubernetes.io/docs/concepts/workloads/pods/pod/ Kubernetes Pod
-
-
-
-* References
-
+.link https://speakerdeck.com/thockin/a-crash-course-on-container-orchestration Crash Course on Container Orchestration (Slides)
+.link https://www.slideshare.net/MartinDanielsson1/kubernetes-introduction-70853289 Kubernetes Introduction (Slides)
+.link https://www.slideshare.net/imesh/an-introduction-to-kubernetes Kubernetes Introduction (Slides)
 
